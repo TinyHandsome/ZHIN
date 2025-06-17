@@ -1,4 +1,4 @@
-![ilovebasketball](ilovebasketball.png)
+![ilovebasketball](ilovebasketball.svg)
 
 # ZHIN
 
