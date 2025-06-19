@@ -1,0 +1,7 @@
+__pycache__
+*.log
+logs
+*.sqlite3
+
+# 不要我的配置文件
+configs.py
