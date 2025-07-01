@@ -57,7 +57,7 @@ async def login(request, data: InLoginSchema):
                     try:
                         user = await User.objects.acreate_user(
                             data.username,
-                            f"{data.username}@whchem.com",
+                            f"{data.username}@example.com",
                             data.password,
                             first_name=data.username,
                         )
@@ -84,7 +84,9 @@ async def login(request, data: InLoginSchema):
     # print(f"> Password is correct for user {data.username}.")
     refresh = RefreshToken.for_user(user)
     print(f"> <{data.username}>: 登录验证成功")
-    return get_success_response(refresh=str(refresh), access=str(refresh.access_token))
+    return get_success_response(
+        refresh=str(refresh), accessToken=str(refresh.access_token)
+    )
 
 
 class InSigninSchema(Schema):
@@ -93,15 +95,41 @@ class InSigninSchema(Schema):
     nickname: str = ""
 
 
-@router.post("/signin", auth=None)
-def signin(request, data: InSigninSchema):
+@router.post("/signin", auth=None, response=OutCommonResponse)
+async def signin(request, data: InSigninSchema):
     """注册"""
     if not CONFIG.OPEN_SIGNIN:
-        print("> The sign-in feature is not available.")
+        # print("> The sign-in feature is not available.")
+        return get_error_response(msg="注册功能未开启")
 
     # 检查用户是否存在
     try:
-        user = User.objects.get(username=data.username)
-        print("> User already exists, cannot sign up again.")
+        user = await User.objects.aget(username=data.username)
+        # print("> User already exists, cannot sign up again.")
+        return get_error_response(msg="用户已存在，无法注册")
     except User.DoesNotExist as e:
-        print("> User does not exist, creating a new user.")
+        # print("> User does not exist, creating a new user.")
+        user = await User.objects.acreate_user(
+            username=data.username,
+            email="{}@example.com".format(data.username),
+            password=data.password,
+            first_name=data.nickname if data.nickname else data.username,
+        )
+        return get_success_response(msg="注册成功", username=user.username)
+
+
+@router.get("/info", response=OutCommonResponse, throttle=[AnonRateThrottle("30/1m")])
+def get_user_info(request):
+    """获取用户信息"""
+    user: User = request.auth
+
+    return get_success_response(
+        userId=user.id,
+        username=user.username,
+        realName=user.first_name or user.username,
+        # 头像
+        avatar="",
+        # 介绍
+        decs=user.email,
+        roles=[],
+    )

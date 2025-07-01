@@ -27,7 +27,7 @@
 
 ---
 
-:ocean: 一些碎碎念，不看也罢~
+:ocean: 下面是一些碎碎念，不看也罢~
 
 ## :calendar: 开发计划
 
@@ -49,7 +49,7 @@
 
   - `SimpleRateThrottle`：基于内存的实现，感觉意义不大。
 
-    > A simple cache implementation, that only requires `.get_cache_key()` to be overridden.
+    > A simple cache implementation, that only requires `.get_cache_key()` to be overridden.
 
   - `AnonRateThrottle`：针对匿名用户的限制，基于IP地址。仅限制未经身份验证的用户。
 
@@ -75,7 +75,8 @@
   使用的范围也分 `global`、`router`、`operation`，节流对于恶意攻击也不太好使，毕竟IP可以欺骗，有就行了~ 暂定：
 
   - 全局：5/1m
-  - 登录：3/1m
+  - 登录 `/usermanage/login`：3/1m
+  - 获取用户信息 `/usermanage/info`：30/1m，老是刷新可以理解一下
   - 超过之后会触发 WARNING 警告，返回 `429`，报错信息：*Too many requests.*
 
 

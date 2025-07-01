@@ -3,5 +3,8 @@ __pycache__
 logs
 *.sqlite3
 
+# 仅保留migrations的__init__.py
+**/migrations/*
+!**/migrations/__init__.py
 # 不要我的配置文件
 configs.py
